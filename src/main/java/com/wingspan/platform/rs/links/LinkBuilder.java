@@ -25,7 +25,7 @@ public class LinkBuilder
      * @param baseBuilder The URI builder that will be used as the starting point
      * @return A LinkBuilder ready to go
      */
-    public static LinkBuilder with(UriBuilder baseBuilder)
+    public static LinkBuilder create(UriBuilder baseBuilder)
     {
         return new LinkBuilder(baseBuilder);
     }

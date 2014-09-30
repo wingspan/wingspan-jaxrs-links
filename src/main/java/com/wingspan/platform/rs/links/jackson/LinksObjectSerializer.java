@@ -44,7 +44,7 @@ public class LinksObjectSerializer extends BeanPropertyWriter
             return;
         }
 
-        LinkBuilder builder = LinkBuilder.with(registry.getBaseBuilder());
+        LinkBuilder builder = LinkBuilder.create(registry.getBaseBuilder());
 
         jgen.writeFieldName(this.getSerializedName());
         jgen.writeStartObject();
