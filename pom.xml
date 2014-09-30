@@ -17,9 +17,8 @@
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>${jaxrs.api.impl.version}</version>
+            <version>2.0.1</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -29,13 +28,19 @@
         <dependency>
             <groupId>org.glassfish.jersey.test-framework.providers</groupId>
             <artifactId>jersey-test-framework-provider-inmemory</artifactId>
-            <version>2.12</version>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <properties>
         <jackson.version>2.3.2</jackson.version>
-        <jaxrs.api.impl.version>2.0.1</jaxrs.api.impl.version>
+        <jersey.version>2.12</jersey.version>
     </properties>
 </project>

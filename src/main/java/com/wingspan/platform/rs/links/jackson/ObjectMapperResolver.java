@@ -1,7 +1,6 @@
 package com.wingspan.platform.rs.links.jackson;
 
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
@@ -16,18 +15,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Provider
 public class ObjectMapperResolver implements ContextResolver<ObjectMapper>
 {
-    @Context
-    Providers _providers;
     ObjectMapper _objectMapper;
 
-    public ObjectMapperResolver(UriBuilder baseBuilder)
+    public ObjectMapperResolver(@Context Providers providers)
     {
-        _objectMapper = new ObjectMapper().registerModule(new LinksModule(_providers, baseBuilder));
-    }
-
-    public ObjectMapperResolver(UriBuilder baseBuilder, ObjectMapper mapper)
-    {
-        _objectMapper = mapper.registerModule(new LinksModule(_providers, baseBuilder));
+        _objectMapper = new ObjectMapper().registerModule(new LinksModule(providers));
     }
 
     @Override

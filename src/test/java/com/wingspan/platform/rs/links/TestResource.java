@@ -3,17 +3,20 @@ package com.wingspan.platform.rs.links;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
 /**
  * A dummy JAX-RS resource for testing LinkBuilder and friends.
  */
 @Path("/test")
+@Produces(MediaType.APPLICATION_JSON)
 public class TestResource
 {
-    static final LinkRef ItemsLink = new LinkRef("items", TestResource.class);
-    static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
-    static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
+    public static final LinkRef ItemsLink = new LinkRef("items", TestResource.class);
+    public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
+    public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
 
     @GET
     @Path("/list")
@@ -32,7 +35,7 @@ public class TestResource
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{id}/more")
     @LinkTarget(name = "self2", templateParams = "id", linkProcessors = TestBeanLinkProcessor.class)
     public TestModel getSomethingElse(@PathParam("id") String id)
     {

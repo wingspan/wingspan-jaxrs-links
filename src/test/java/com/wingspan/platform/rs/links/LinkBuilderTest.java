@@ -69,7 +69,7 @@ public class LinkBuilderTest
 
         URI beanUrl = linkBuilder.buildUri(TestResource.Self2Link, bean);
         assertNotNull(beanUrl);
-        assertEquals(basePath + "/test/linkProcessorCalled", beanUrl.toString());
+        assertEquals(basePath + "/test/linkProcessorCalled/more", beanUrl.toString());
 
     }
 }
