@@ -1,0 +1,10 @@
+*~
+*.ids
+*.ipr
+*.iws
+*.eml
+*.iml
+*.log
+.idea
+.DS_Store
+target
