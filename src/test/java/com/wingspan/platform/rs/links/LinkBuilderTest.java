@@ -72,4 +72,19 @@ public class LinkBuilderTest
         assertEquals(basePath + "/test/linkProcessorCalled/more", beanUrl.toString());
 
     }
+
+    @Test
+    public void testSubResources()
+    {
+        String basePath = "/LinkBuilderTest/testSubResources";
+
+        UriBuilder baseBuilder = UriBuilder.fromPath(basePath);
+        LinkBuilder linkBuilder = new LinkBuilder(baseBuilder);
+        TestModel bean = new TestModel("123456789");
+
+        URI beanUrl = linkBuilder.buildUri(TestResource.CommentLink, bean);
+        assertNotNull(beanUrl);
+        assertEquals(basePath + "/test/subrsrc/123456789", beanUrl.toString());
+
+    }
 }

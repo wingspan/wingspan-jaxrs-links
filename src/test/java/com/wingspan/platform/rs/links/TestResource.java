@@ -17,6 +17,7 @@ public class TestResource
     public static final LinkRef ItemsLink = new LinkRef("items", TestResource.class);
     public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
     public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
+    public static final LinkRef CommentLink = new LinkRef("comment", SubResource.class);
 
     @GET
     @Path("/list")
@@ -52,11 +53,9 @@ public class TestResource
 
     static class SubResource
     {
-        static final LinkRef CommentLink = new LinkRef("comment", SubResource.class);
-
         @GET
         @Path("/{id}")
-        @LinkTarget(name = "comment", parentLink = "subrsrc", parentResource = TestResource.class)
+        @LinkTarget(name = "comment", templateParams = "id", parentLink = "subrsrc", parentResource = TestResource.class)
         public String getSubItem(@PathParam("id") String id)
         {
             return id;

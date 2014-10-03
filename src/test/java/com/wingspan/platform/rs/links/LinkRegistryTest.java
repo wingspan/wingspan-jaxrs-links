@@ -37,7 +37,7 @@ public class LinkRegistryTest
         }
 
         // Test that adding additional links provided by other resources doesn't clobber earlier registrations
-        provider.register(TestModel.class, new LinkRegistry(baseURI, TestResource.SubResource.CommentLink));
+        provider.register(TestModel.class, new LinkRegistry(baseURI, TestResource.CommentLink));
         List<String> names = new ArrayList<>();
 
         for (LinkRef link : provider.getContext(model.getClass()).getLinks()) {
