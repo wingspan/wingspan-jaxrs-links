@@ -2,6 +2,7 @@ package com.wingspan.platform.rs.links.jackson;
 
 import java.util.List;
 
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -17,7 +18,7 @@ import com.wingspan.platform.rs.links.LinksObject;
  */
 public class LinksModule extends SimpleModule
 {
-    public LinksModule(final Providers providers)
+    public LinksModule(final UriInfo uriInfo, final Providers providers)
     {
         super("wingspan-jaxrs-links");
 
@@ -30,7 +31,7 @@ public class LinksModule extends SimpleModule
             {
                 for (int i = 0; i < beanProperties.size(); ++i) {
                     if (LinksObject.class.isAssignableFrom(beanProperties.get(i).getPropertyType())) {
-                        beanProperties.set(i, new LinksObjectSerializer(beanProperties.get(i), providers));
+                        beanProperties.set(i, new LinksObjectSerializer(beanProperties.get(i), uriInfo, providers));
                     }
                 }
 

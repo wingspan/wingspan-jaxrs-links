@@ -1,11 +1,9 @@
 package com.wingspan.platform.rs.links;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  * A container of registrations for accessing links. This registry can apply to one or more model types,
@@ -15,36 +13,26 @@ import javax.ws.rs.core.UriBuilder;
  */
 public class LinkRegistry
 {
-    private URI baseURI;
     private Collection<LinkRef> links;
 
     /**
      * Create a new registry for links rooted at the given URI.
      *
-     * @param baseURI URI that will initialize the UriBuilder
      * @param links Link references in this registry
      */
-    public LinkRegistry(URI baseURI, LinkRef... links)
+    public LinkRegistry(LinkRef... links)
     {
-        this(baseURI, Arrays.asList(links));
+        this(Arrays.asList(links));
     }
 
     /**
      * Create a new registry for links rooted at the given URI.
      *
-     * @param baseURI URI that will initialize the UriBuilder
      * @param links Link references in this registry
      */
-    public LinkRegistry(URI baseURI, Collection<LinkRef> links)
+    public LinkRegistry(Collection<LinkRef> links)
     {
-        this.baseURI = baseURI;
         this.links = Collections.unmodifiableCollection(links);
-    }
-
-    public UriBuilder getBaseBuilder()
-    {
-        // Since the UriBuilder is mutable, it's safest to just return a new one each time.
-        return UriBuilder.fromUri(baseURI);
     }
 
     /**
@@ -62,6 +50,6 @@ public class LinkRegistry
         HashSet<LinkRef> newLinks = new HashSet<>(this.links);
         newLinks.addAll(registry.links);
 
-        return new LinkRegistry(baseURI, newLinks);
+        return new LinkRegistry(newLinks);
     }
 }

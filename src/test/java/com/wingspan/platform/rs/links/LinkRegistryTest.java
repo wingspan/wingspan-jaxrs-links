@@ -1,6 +1,5 @@
 package com.wingspan.platform.rs.links;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +20,12 @@ public class LinkRegistryTest
         }
     }
 
-    static URI baseURI = URI.create("http://example.org/root");
-
     LinkRegistryProvider provider = new LinkRegistryProvider();
 
     @Test
     public void testRegistry()
     {
-        provider.register(TestModel.class, new LinkRegistry(baseURI, TestResource.SelfLink, TestResource.ItemsLink));
+        provider.register(TestModel.class, new LinkRegistry(TestResource.SelfLink, TestResource.ItemsLink));
 
         TestModel model = new TestModel("123456789");
 
@@ -37,7 +34,7 @@ public class LinkRegistryTest
         }
 
         // Test that adding additional links provided by other resources doesn't clobber earlier registrations
-        provider.register(TestModel.class, new LinkRegistry(baseURI, TestResource.CommentLink));
+        provider.register(TestModel.class, new LinkRegistry(TestResource.CommentLink));
         List<String> names = new ArrayList<>();
 
         for (LinkRef link : provider.getContext(model.getClass()).getLinks()) {

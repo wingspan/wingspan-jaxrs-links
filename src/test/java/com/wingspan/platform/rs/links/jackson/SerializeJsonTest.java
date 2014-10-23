@@ -1,6 +1,5 @@
 package com.wingspan.platform.rs.links.jackson;
 
-import java.net.URI;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
@@ -20,14 +19,12 @@ import com.wingspan.platform.rs.links.TestResource;
  */
 public class SerializeJsonTest extends JerseyTest
 {
-    static URI baseURI = URI.create("http://example.org/root");
-
     @Override
     protected Application configure()
     {
         LinkRegistryProvider provider = new LinkRegistryProvider();
 
-        provider.register(TestModel.class, new LinkRegistry(baseURI, TestResource.SelfLink, TestResource.ItemsLink));
+        provider.register(TestModel.class, new LinkRegistry(TestResource.SelfLink, TestResource.ItemsLink));
 
         return new ResourceConfig()
             .register(TestResource.class)

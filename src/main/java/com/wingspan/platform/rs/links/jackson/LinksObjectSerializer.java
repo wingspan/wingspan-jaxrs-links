@@ -1,6 +1,7 @@
 package com.wingspan.platform.rs.links.jackson;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 
@@ -18,12 +19,14 @@ import com.wingspan.platform.rs.links.LinkRegistry;
  */
 public class LinksObjectSerializer extends BeanPropertyWriter
 {
+    private UriInfo _uriInfo;
     private ContextResolver<LinkRegistry> _resolver;
 
-    public LinksObjectSerializer(BeanPropertyWriter base, Providers providers)
+    public LinksObjectSerializer(BeanPropertyWriter base, UriInfo uriInfo, Providers providers)
     {
         super(base);
 
+        _uriInfo = uriInfo;
         _resolver = providers.getContextResolver(LinkRegistry.class, MediaType.APPLICATION_JSON_TYPE);
 
         if (_resolver == null) {
@@ -44,7 +47,7 @@ public class LinksObjectSerializer extends BeanPropertyWriter
             return;
         }
 
-        LinkBuilder builder = LinkBuilder.create(registry.getBaseBuilder());
+        LinkBuilder builder = LinkBuilder.create(_uriInfo.getBaseUriBuilder());
 
         jgen.writeFieldName(this.getSerializedName());
         jgen.writeStartObject();
