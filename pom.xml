@@ -6,7 +6,7 @@
 
     <groupId>com.wingspan.platform</groupId>
     <artifactId>wingspan-jaxrs-links</artifactId>
-    <version>0.91</version>
+    <version>0.92</version>
     <packaging>jar</packaging>
 
     <description>
@@ -60,6 +60,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.3</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>

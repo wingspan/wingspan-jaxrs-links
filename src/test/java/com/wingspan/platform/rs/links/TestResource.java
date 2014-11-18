@@ -1,9 +1,6 @@
 package com.wingspan.platform.rs.links;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
@@ -25,6 +22,14 @@ public class TestResource
     public TestModel[] getList()
     {
         return new TestModel[] { new TestModel("a"), new TestModel("b"), new TestModel("c") };
+    }
+
+    @POST
+    @Path("/list")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public TestModel[] addToList(TestModel newModel)
+    {
+        return new TestModel[] { new TestModel("a"), newModel };
     }
 
     @GET

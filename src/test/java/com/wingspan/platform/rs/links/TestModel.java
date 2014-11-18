@@ -1,14 +1,25 @@
 package com.wingspan.platform.rs.links;
 
 /**
- * Created by agoodale on 9/30/14.
+ * Simple model for the tests.
  */
 public class TestModel
 {
     String id;
 
-    public TestModel(String id) { this.id = id; }
+    public TestModel()
+    {}
+    public TestModel(String id)
+    {
+        this.id = id;
+    }
 
-    public String getId() { return id; }
-    public LinksObject getLinks() { return null; }
+    public String getId()
+    {
+        return id;
+    }
+    public LinksObject getLinks()
+    {
+        return null;
+    }
 }
