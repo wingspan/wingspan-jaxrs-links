@@ -6,7 +6,7 @@
 
     <groupId>com.wingspan.platform</groupId>
     <artifactId>wingspan-jaxrs-links</artifactId>
-    <version>0.93</version>
+    <version>0.94</version>
     <packaging>jar</packaging>
 
     <description>

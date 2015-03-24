@@ -127,7 +127,7 @@ public class LinkBuilder
 
         // To generate a link to this method, either the method has a Path annotation or it doesn't.
         if (linkMethod.isAnnotationPresent(Path.class)) {
-            builder.path(link.getResource(), linkMethod.getName());
+            builder.path(linkMethod);
         }
 
         return builder;
