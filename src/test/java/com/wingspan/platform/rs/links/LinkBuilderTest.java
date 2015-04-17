@@ -1,6 +1,7 @@
 package com.wingspan.platform.rs.links;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
@@ -86,5 +87,22 @@ public class LinkBuilderTest
         assertNotNull(beanUrl);
         assertEquals(basePath + "/test/subrsrc/123456789", beanUrl.toString());
 
+    }
+
+    @Test
+    public void testFilenameEncoding()
+        throws URISyntaxException
+    {
+        String basePath = "/LinkBuilderTest/testFileNameEncoding";
+
+        UriBuilder baseBuilder = UriBuilder.fromPath(basePath);
+        LinkBuilder linkBuilder = new LinkBuilder(baseBuilder);
+        TestModel testBean = new TestModel("123456789");
+
+        URI beanUrl = linkBuilder.buildUri(TestResource.FilenameLink, testBean);
+
+        assertFalse(beanUrl.toString().endsWith(testBean.getFilename()));
+        assertFalse(beanUrl.toString().contains("%252F"));
+        assertFalse(beanUrl.toString().contains("%5C"));
     }
 }

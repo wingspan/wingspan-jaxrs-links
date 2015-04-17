@@ -14,6 +14,7 @@ public class TestResource
     public static final LinkRef ItemsLink = new LinkRef("items", TestResource.class);
     public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
     public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
+    public static final LinkRef FilenameLink =  new LinkRef("filename", TestResource.class);
     public static final LinkRef CommentLink = new LinkRef("comment", SubResource.class);
 
     @GET
@@ -54,6 +55,14 @@ public class TestResource
     public SubResource getSubResource()
     {
         return new SubResource();
+    }
+
+    @GET
+    @Path("/{id}/{filename}")
+    @LinkTarget(name = "filename", templateParams = {"id", "filename"})
+    public TestModel getFileName(@PathParam("id") String id)
+    {
+        return new TestModel(id);
     }
 
     static class SubResource

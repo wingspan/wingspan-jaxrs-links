@@ -6,6 +6,7 @@ package com.wingspan.platform.rs.links;
 public class TestModel
 {
     String id;
+    String filename = "foo/bar/asdfa\\\\sdf//foo";
 
     public TestModel()
     {}
@@ -21,5 +22,10 @@ public class TestModel
     public LinksObject getLinks()
     {
         return null;
+    }
+
+    public String getFilename()
+    {
+        return filename;
     }
 }

@@ -41,7 +41,7 @@ public class LinksObjectSerializer extends BeanPropertyWriter
 
         if (registry == null) {	// When there's no link registry, all we can do is serialize null.
             if (this.hasNullSerializer()) {
-                jgen.writeFieldName(this.getSerializedName());
+                jgen.writeFieldName(this._name);
                 this._nullSerializer.serialize(null, jgen, prov);
             }
             return;
@@ -49,7 +49,7 @@ public class LinksObjectSerializer extends BeanPropertyWriter
 
         LinkBuilder builder = LinkBuilder.create(_uriInfo.getBaseUriBuilder());
 
-        jgen.writeFieldName(this.getSerializedName());
+        jgen.writeFieldName(this._name);
         jgen.writeStartObject();
 
         for (LinkRef link : registry.getLinks()) {

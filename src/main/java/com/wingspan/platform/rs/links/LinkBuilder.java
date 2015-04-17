@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 
@@ -91,6 +92,10 @@ public class LinkBuilder
             if (templateValues[i] == null) {
                 return null;
             }
+
+            // A bug in Jersey 1.x UriBuilder leaves '/' in template values for URI path segments.
+            // https://java.net/jira/browse/JAX_RS_SPEC-70
+            templateValues[i] = removeSlashes(templateValues[i]);
         }
 
         if (!target.defaultQuery().isEmpty()) {
@@ -152,6 +157,20 @@ public class LinkBuilder
 
             return null;
         }
+    }
+
+    //removes both forward and back slashes
+    static final Pattern SLASH_REGEX = Pattern.compile("[/\\\\]");
+
+    private Object removeSlashes(Object templateValue)
+    {
+        if (templateValue instanceof String) {
+            // Remove the slashes because we can't put percent-encodings in here.
+            if (((String) templateValue).indexOf('/') != -1) {
+                return SLASH_REGEX.matcher((String) templateValue).replaceAll("");
+            }
+        }
+        return templateValue;
     }
 
     private static Method getMethodForLink(LinkRef link)
