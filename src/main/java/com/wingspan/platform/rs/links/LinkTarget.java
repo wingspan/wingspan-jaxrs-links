@@ -43,4 +43,9 @@ public @interface LinkTarget
      * Additional classes that will successively process generated URIs.
      */
     Class<? extends LinkProcessor> [] linkProcessors() default {};
+
+    /**
+     * Organize links into groups for managing registrations.
+     */
+    Class<?>[] groups() default {};
 }

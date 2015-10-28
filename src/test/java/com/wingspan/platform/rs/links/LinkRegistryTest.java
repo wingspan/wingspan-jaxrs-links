@@ -50,4 +50,21 @@ public class LinkRegistryTest
 
         assertNotNull("Failed to find subtype links", provider.getContext(subModel.getClass()));
     }
+
+    @Test
+    public void testGrouping()
+    {
+        LinkRegistry registry1 = LinkRegistry.fromResource(TestResource.class);
+
+        assertNotNull(registry1);
+        assertEquals(6, registry1.getLinks().size());
+
+        LinkRegistry registry2 = LinkRegistry.fromResource(TestResource.class, null);
+
+        assertEquals(registry1.getLinks().size(), registry2.getLinks().size());
+
+        LinkRegistry registry3 = LinkRegistry.fromResource(TestResource.class, TestGroups.Group3.class);
+
+        assertEquals(3, registry3.getLinks().size());
+    }
 }

@@ -15,7 +15,7 @@ public class TestResource
     public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
     public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
     public static final LinkRef FilenameLink =  new LinkRef("filename", TestResource.class);
-    public static final LinkRef CommentLink = new LinkRef("comment", SubResource.class);
+    public static final LinkRef CommentLink = new LinkRef("comment", TestSubResource.class);
 
     @GET
     @Path("/list")
@@ -35,7 +35,7 @@ public class TestResource
 
     @GET
     @Path("/{id}")
-    @LinkTarget(name = LinkTypes.SELF, templateParams = "id")
+    @LinkTarget(name = LinkTypes.SELF, templateParams = "id", groups = TestGroups.Group1.class)
     public TestModel getSomethingSpecific(@PathParam("id") String id)
     {
         return new TestModel(id);
@@ -43,7 +43,8 @@ public class TestResource
 
     @GET
     @Path("/{id}/more")
-    @LinkTarget(name = "self2", templateParams = "id", linkProcessors = TestBeanLinkProcessor.class)
+    @LinkTarget(name = "self2", templateParams = "id", groups = TestGroups.Group2.class,
+        linkProcessors = TestBeanLinkProcessor.class)
     public TestModel getSomethingElse(@PathParam("id") String id)
     {
         return new TestModel(id);
@@ -52,28 +53,25 @@ public class TestResource
     @GET
     @Path("/subrsrc")
     @LinkTarget(name = "subrsrc")
-    public SubResource getSubResource()
+    public TestSubResource getSubResource()
     {
-        return new SubResource();
+        return new TestSubResource();
     }
 
     @GET
     @Path("/{id}/{filename}")
-    @LinkTarget(name = "filename", templateParams = {"id", "filename"})
+    @LinkTarget(name = "filename", templateParams = {"id", "filename"}, groups = TestGroups.Group1.class)
     public TestModel getFileName(@PathParam("id") String id)
     {
         return new TestModel(id);
     }
 
-    static class SubResource
+    @GET
+    @Path("/{id}/subrsrc")
+    @LinkTarget(name = "subrsrc2")
+    public TestSubResource getSubResourceWithID(@PathParam("id") String id)
     {
-        @GET
-        @Path("/{id}")
-        @LinkTarget(name = "comment", templateParams = "id", parentLink = "subrsrc", parentResource = TestResource.class)
-        public String getSubItem(@PathParam("id") String id)
-        {
-            return id;
-        }
+        return new TestSubResource();
     }
 
     static class TestBeanLinkProcessor implements LinkProcessor<TestModel>
