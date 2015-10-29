@@ -28,4 +28,31 @@ public class TestModel
     {
         return filename;
     }
+
+    static class CommentModel
+    {
+        String id;
+        String parentId;
+        String text;
+
+        public CommentModel(String id)
+        {
+            this.id = id;
+        }
+
+        public String getId()
+        {
+            return id;
+        }
+
+        public String getParentId()
+        {
+            return parentId;
+        }
+
+        public String getText()
+        {
+            return text;
+        }
+    }
 }

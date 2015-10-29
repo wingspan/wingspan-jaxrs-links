@@ -34,7 +34,7 @@ public class LinkRegistryTest
         }
 
         // Test that adding additional links provided by other resources doesn't clobber earlier registrations
-        provider.register(TestModel.class, new LinkRegistry(TestResource.CommentLink));
+        provider.register(TestModel.class, new LinkRegistry(TestResource.SubRsrcLink));
         List<String> names = new ArrayList<>();
 
         for (LinkRef link : provider.getContext(model.getClass()).getLinks()) {
@@ -43,7 +43,7 @@ public class LinkRegistryTest
 
         assertEquals(3, names.size());
         assertTrue(names.contains("items") && names.contains("self"));  // Links from the first registerModel() call
-        assertTrue(names.contains("comment"));                          // The link from the second registerModel() call
+        assertTrue(names.contains("subrsrc"));                          // The link from the second registerModel() call
 
         // Test that a model's subtype will inherit the link registration
         SubModel subModel = new SubModel("bye");
@@ -57,7 +57,7 @@ public class LinkRegistryTest
         LinkRegistry registry1 = LinkRegistry.fromResource(TestResource.class);
 
         assertNotNull(registry1);
-        assertEquals(6, registry1.getLinks().size());
+        assertEquals(5, registry1.getLinks().size());
 
         LinkRegistry registry2 = LinkRegistry.fromResource(TestResource.class, null);
 

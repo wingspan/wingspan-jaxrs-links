@@ -1,5 +1,7 @@
 package com.wingspan.platform.rs.links;
 
+import java.util.Objects;
+
 /**
  * A reference to a link on a resource class.
  *
@@ -9,6 +11,7 @@ public class LinkRef
 {
     String   name;
     Class<?> resource;
+    String   locatorMethod;
 
     public static final LinkRef NONE = new LinkRef("", Void.class);
 
@@ -16,6 +19,13 @@ public class LinkRef
     {
         this.name = name;
         this.resource = resource;
+    }
+
+    private LinkRef(String name, Class<?> resource, String locatorMethod)
+    {
+        this.name = name;
+        this.resource = resource;
+        this.locatorMethod = locatorMethod;
     }
 
     public String getName()
@@ -26,6 +36,11 @@ public class LinkRef
     public Class<?> getResource()
     {
         return resource;
+    }
+
+    public String getLocatorMethod()
+    {
+        return locatorMethod;
     }
 
     @Override
@@ -40,14 +55,19 @@ public class LinkRef
 
         LinkRef linkRef = (LinkRef) o;
 
-        return name.equals(linkRef.name) && resource.equals(linkRef.resource);
+        return Objects.equals(name, linkRef.name) &&
+                Objects.equals(resource, linkRef.resource) &&
+                Objects.equals(locatorMethod, linkRef.locatorMethod);
     }
 
     @Override
     public int hashCode()
     {
-        int result = name.hashCode();
-        result = 31 * result + resource.hashCode();
-        return result;
+        return Objects.hash(name, resource, locatorMethod);
+    }
+
+    public LinkRef fromParentMethod(Class<?> resourceClass, String methodName)
+    {
+        return new LinkRef(name, resourceClass, methodName);
     }
 }

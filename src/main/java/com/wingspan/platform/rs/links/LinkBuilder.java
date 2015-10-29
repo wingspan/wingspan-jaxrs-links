@@ -120,17 +120,15 @@ public class LinkBuilder
     public UriBuilder newUriBuilder(LinkRef link)
     {
         Method linkMethod = getMethodForLink(link);
-        LinkTarget linkTarget = linkMethod.getAnnotation(LinkTarget.class);
-        UriBuilder builder;
+        UriBuilder builder = _builder.clone().path(link.getResource());
 
         // Note: Sub-resources don't have a Path annotation on the class
-        if (linkTarget.parentLink().isEmpty()) {
-            builder = _builder.clone().path(link.getResource());
-        } else {
-            builder = newUriBuilder(new LinkRef(linkTarget.parentLink(), linkTarget.parentResource()));
+        if (link.getLocatorMethod() != null) {
+            builder = builder.path(link.getResource(), link.getLocatorMethod());
         }
 
-        // To generate a link to this method, either the method has a Path annotation or it doesn't.
+        // Methods don't always have a Path annotation since they may represent the primary resource
+        // for the class.
         if (linkMethod.isAnnotationPresent(Path.class)) {
             builder.path(linkMethod);
         }
@@ -180,13 +178,23 @@ public class LinkBuilder
         }
 
         for (Method m : link.getResource().getMethods()) {
-            LinkTarget linkTarget = m.getAnnotation(LinkTarget.class);
+            // If it's a sub-resource link, so we need to look for the method on the return type of the
+            // resource locator method. That's the class that the link references.
+            if (link.locatorMethod != null) {
+                if (!m.getName().equals(link.locatorMethod)) {
+                    continue;
+                }
 
-            if (linkTarget == null) {
+                m = getMethodForLink(new LinkRef(link.name, m.getReturnType()));
+                s_methodCache.put(link, m);
+                return m;
+            }
+
+            if (!m.isAnnotationPresent(LinkTarget.class)) {
                 continue;
             }
 
-            if (linkTarget.name().equals(link.getName())) {
+            if (m.getAnnotation(LinkTarget.class).name().equals(link.getName())) {
                 s_methodCache.put(link, m);
                 return m;
             }

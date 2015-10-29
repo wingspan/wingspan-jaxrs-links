@@ -15,7 +15,11 @@ public class TestResource
     public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
     public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
     public static final LinkRef FilenameLink =  new LinkRef("filename", TestResource.class);
-    public static final LinkRef CommentLink = new LinkRef("comment", TestSubResource.class);
+    public static final LinkRef SubRsrcLink = new LinkRef("subrsrc", TestResource.class);
+
+    // Since comments are a sub-resource, we need to create a reference that indicates how to chain them.
+    public static final LinkRef CommentLink =
+            TestSubResource.CommentLink.fromParentMethod(TestResource.class, "getSubResourceWithID");
 
     @GET
     @Path("/list")
@@ -50,7 +54,6 @@ public class TestResource
         return new TestModel(id);
     }
 
-    @GET
     @Path("/subrsrc")
     @LinkTarget(name = "subrsrc")
     public TestSubResource getSubResource()
@@ -66,9 +69,7 @@ public class TestResource
         return new TestModel(id);
     }
 
-    @GET
-    @Path("/{id}/subrsrc")
-    @LinkTarget(name = "subrsrc2")
+    @Path("/{id}/comments")
     public TestSubResource getSubResourceWithID(@PathParam("id") String id)
     {
         return new TestSubResource();

@@ -25,16 +25,6 @@ public @interface LinkTarget
     String[] templateParams() default {};
 
     /**
-     * When this source is on a sub-resource, this property defines the parent link name
-     */
-    String parentLink() default "";
-
-    /**
-     * When this source is on a sub-resource, this property defines the parent resource class
-     */
-    Class<?> parentResource() default Void.class;
-
-    /**
      * A default query parameter used when generating links with a single query value (optional)
      */
     String defaultQuery() default "";

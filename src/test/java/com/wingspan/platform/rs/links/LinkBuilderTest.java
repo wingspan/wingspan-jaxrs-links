@@ -83,10 +83,15 @@ public class LinkBuilderTest
         LinkBuilder linkBuilder = new LinkBuilder(baseBuilder);
         TestModel bean = new TestModel("123456789");
 
-        URI beanUrl = linkBuilder.buildUri(TestResource.CommentLink, bean);
+        URI beanUrl = linkBuilder.buildUri(TestResource.SubRsrcLink, bean);
         assertNotNull(beanUrl);
-        assertEquals(basePath + "/test/subrsrc/123456789", beanUrl.toString());
+        assertEquals(basePath + "/test/subrsrc", beanUrl.toString());
 
+        TestModel.CommentModel comment = new TestModel.CommentModel("1000");
+
+        beanUrl = linkBuilder.buildUri(TestResource.CommentLink, comment);
+        assertNotNull(beanUrl);
+        assertEquals(basePath + "/test/1000/comments/1000", beanUrl.toString());
     }
 
     @Test
