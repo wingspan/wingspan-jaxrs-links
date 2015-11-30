@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Predicate;
 
 /**
  * This annotation goes on resource class methods to indicate they provide links for models.
@@ -28,6 +29,11 @@ public @interface LinkTarget
      * A default query parameter used when generating links with a single query value (optional)
      */
     String defaultQuery() default "";
+
+    /**
+     * An optional condition that controls whether the link is generated
+     */
+    Class<? extends Predicate> condition() default Predicate.class;
 
     /**
      * Additional classes that will successively process generated URIs.

@@ -1,5 +1,7 @@
 package com.wingspan.platform.rs.links;
 
+import java.util.function.Predicate;
+
 /**
  * Simple model for the tests.
  */
@@ -53,6 +55,15 @@ public class TestModel
         public String getText()
         {
             return text;
+        }
+    }
+
+    static class HasFile implements Predicate<TestModel>
+    {
+        @Override
+        public boolean test(TestModel model)
+        {
+            return model.filename != null;
         }
     }
 }

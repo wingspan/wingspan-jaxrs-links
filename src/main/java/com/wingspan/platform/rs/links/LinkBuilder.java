@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
@@ -79,8 +80,15 @@ public class LinkBuilder
     public URI buildUri(LinkRef theLink, Object paramBean)
     {
         UriBuilder builder = newUriBuilder(theLink);
-
         LinkTarget target = getMethodForLink(theLink).getAnnotation(LinkTarget.class);
+
+        if (target.condition() != Predicate.class) {
+            // Run the bean through the predicate to see if the link should be generated.
+            if (!predicateFor(target).test(paramBean)) {
+                return null;
+            }
+        }
+
         String[] paramNames = target.templateParams();
         Object[] templateValues = new Object[paramNames.length];
 
@@ -240,6 +248,16 @@ public class LinkBuilder
         }
         catch (ReflectiveOperationException e) {
             throw new IllegalArgumentException("Could not instantiate ILinkProcessor implementation.", e);
+        }
+    }
+
+    private static Predicate predicateFor(LinkTarget target)
+    {
+        try {
+            return target.condition().newInstance();
+        }
+        catch (ReflectiveOperationException e) {
+            throw new IllegalArgumentException("Could not instantiate Predicate implementation.", e);
         }
     }
 }

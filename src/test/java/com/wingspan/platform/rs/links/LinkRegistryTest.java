@@ -57,7 +57,7 @@ public class LinkRegistryTest
         LinkRegistry registry1 = LinkRegistry.fromResource(TestResource.class);
 
         assertNotNull(registry1);
-        assertEquals(5, registry1.getLinks().size());
+        assertEquals(6, registry1.getLinks().size());
 
         LinkRegistry registry2 = LinkRegistry.fromResource(TestResource.class, null);
 

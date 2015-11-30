@@ -14,6 +14,7 @@ public class TestResource
     public static final LinkRef ItemsLink = new LinkRef("items", TestResource.class);
     public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
     public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
+    public static final LinkRef MaybeLink =  new LinkRef("maybe", TestResource.class);
     public static final LinkRef FilenameLink =  new LinkRef("filename", TestResource.class);
     public static final LinkRef SubRsrcLink = new LinkRef("subrsrc", TestResource.class);
 
@@ -50,6 +51,14 @@ public class TestResource
     @LinkTarget(name = "self2", templateParams = "id", groups = TestGroups.Group2.class,
         linkProcessors = TestBeanLinkProcessor.class)
     public TestModel getSomethingElse(@PathParam("id") String id)
+    {
+        return new TestModel(id);
+    }
+
+    @GET
+    @Path("/{id}/maybe")
+    @LinkTarget(name = "maybe", templateParams = "id", condition = TestModel.HasFile.class)
+    public TestModel getMaybe(@PathParam("id") String id)
     {
         return new TestModel(id);
     }

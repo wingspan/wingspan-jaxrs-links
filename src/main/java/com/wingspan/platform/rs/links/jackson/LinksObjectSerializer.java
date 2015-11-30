@@ -1,5 +1,6 @@
 package com.wingspan.platform.rs.links.jackson;
 
+import java.net.URI;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
@@ -53,7 +54,11 @@ public class LinksObjectSerializer extends BeanPropertyWriter
         jgen.writeStartObject();
 
         for (LinkRef link : registry.getLinks()) {
-            prov.defaultSerializeField(link.getName(), builder.buildUri(link, bean), jgen);
+            URI uri = builder.buildUri(link, bean);
+
+            if (uri != null) {
+                prov.defaultSerializeField(link.getName(), uri, jgen);
+            }
         }
 
         jgen.writeEndObject();

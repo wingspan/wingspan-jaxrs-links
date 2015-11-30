@@ -110,4 +110,22 @@ public class LinkBuilderTest
         assertFalse(beanUrl.toString().contains("%252F"));
         assertFalse(beanUrl.toString().contains("%5C"));
     }
+
+    @Test
+    public void testCondition()
+    {
+        String basePath = "/LinkBuilderTest/testCondition";
+
+        UriBuilder baseBuilder = UriBuilder.fromPath(basePath);
+        LinkBuilder linkBuilder = new LinkBuilder(baseBuilder);
+        TestModel bean = new TestModel("123456789");
+
+        URI beanUrl = linkBuilder.buildUri(TestResource.MaybeLink, bean);
+        assertNotNull(beanUrl);
+        assertEquals(basePath + "/test/123456789/maybe", beanUrl.toString());
+
+        bean.filename = null;
+        beanUrl = linkBuilder.buildUri(TestResource.MaybeLink, bean);
+        assertNull(beanUrl);
+    }
 }
