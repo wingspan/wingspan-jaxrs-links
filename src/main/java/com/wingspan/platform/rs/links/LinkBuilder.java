@@ -9,7 +9,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.ws.rs.Path;
@@ -62,7 +61,7 @@ public class LinkBuilder
         UriBuilder builder = newUriBuilder(link);
 
         if (params != null) {
-            LinkTarget target = getMethodForLink(link).getAnnotation(LinkTarget.class);
+            LinkTarget target = link.getResourceMethod().getAnnotation(LinkTarget.class);
             builder.queryParam(target.defaultQuery(), params);
         }
 
@@ -80,7 +79,7 @@ public class LinkBuilder
     public URI buildUri(LinkRef theLink, Object paramBean)
     {
         UriBuilder builder = newUriBuilder(theLink);
-        LinkTarget target = getMethodForLink(theLink).getAnnotation(LinkTarget.class);
+        LinkTarget target = theLink.getResourceMethod().getAnnotation(LinkTarget.class);
 
         if (target.condition() != Predicate.class) {
             // Run the bean through the predicate to see if the link should be generated.
@@ -127,7 +126,7 @@ public class LinkBuilder
      */
     public UriBuilder newUriBuilder(LinkRef link)
     {
-        Method linkMethod = getMethodForLink(link);
+        Method linkMethod = link.getResourceMethod();
         UriBuilder builder = _builder.clone().path(link.getResource());
 
         // Note: Sub-resources don't have a Path annotation on the class
@@ -179,12 +178,8 @@ public class LinkBuilder
         return templateValue;
     }
 
-    private static Method getMethodForLink(LinkRef link)
+    static Method getMethodForLink(LinkRef link)
     {
-        if (s_methodCache.containsKey(link)) {
-            return s_methodCache.get(link);
-        }
-
         for (Method m : link.getResource().getMethods()) {
             // If it's a sub-resource link, so we need to look for the method on the return type of the
             // resource locator method. That's the class that the link references.
@@ -194,7 +189,6 @@ public class LinkBuilder
                 }
 
                 m = getMethodForLink(new LinkRef(link.name, m.getReturnType()));
-                s_methodCache.put(link, m);
                 return m;
             }
 
@@ -202,8 +196,7 @@ public class LinkBuilder
                 continue;
             }
 
-            if (m.getAnnotation(LinkTarget.class).name().equals(link.getName())) {
-                s_methodCache.put(link, m);
+            if (m.getAnnotation(LinkTarget.class).name().equals(link.name)) {
                 return m;
             }
         }
@@ -211,8 +204,6 @@ public class LinkBuilder
         // I like the idea of not returning null, but that may not work in practice.
         throw new IllegalArgumentException("Unknown link name");
     }
-
-    static final ConcurrentHashMap<LinkRef, Method> s_methodCache = new ConcurrentHashMap<>();
 
     private static Iterable<LinkProcessor> linkProcessorsFor(LinkTarget target)
     {

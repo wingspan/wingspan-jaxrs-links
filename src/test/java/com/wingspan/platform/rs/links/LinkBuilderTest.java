@@ -128,4 +128,25 @@ public class LinkBuilderTest
         beanUrl = linkBuilder.buildUri(TestResource.MaybeLink, bean);
         assertNull(beanUrl);
     }
+
+    @Test
+    public void testOverrideName()
+    {
+        String basePath = "/LinkBuilderTest/testOverrideName";
+
+        UriBuilder baseBuilder = UriBuilder.fromPath(basePath);
+        LinkBuilder linkBuilder = new LinkBuilder(baseBuilder);
+        TestModel bean = new TestModel("123456789");
+
+        URI beanUrl = linkBuilder.buildUri(TestResource.ItemsLink, bean);
+        assertNotNull(beanUrl);
+        assertEquals(basePath + "/test/list", beanUrl.toString());
+
+        LinkRef newItemsLink = TestResource.ItemsLink.overrideName("items2!");
+
+        beanUrl = linkBuilder.buildUri(newItemsLink, bean);
+        assertNotNull(beanUrl);
+        assertEquals(basePath + "/test/list", beanUrl.toString());
+        assertEquals("items2!", newItemsLink.getName());
+    }
 }

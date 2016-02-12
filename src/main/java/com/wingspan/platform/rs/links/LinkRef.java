@@ -1,5 +1,6 @@
 package com.wingspan.platform.rs.links;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
@@ -13,19 +14,52 @@ public class LinkRef
     Class<?> resource;
     String   locatorMethod;
 
-    public static final LinkRef NONE = new LinkRef("", Void.class);
+    Method  resourceMethod;
 
+    /**
+     * Creates a standard link reference for a named-link on a given resource class.
+     *
+     * @param name The name of the link in a LinkTarget annotation
+     * @param resource The resource class hosting the LinkTargets
+     */
     public LinkRef(String name, Class<?> resource)
     {
-        this.name = name;
-        this.resource = resource;
+        this(name, resource, null, null);
     }
 
-    private LinkRef(String name, Class<?> resource, String locatorMethod)
+    private LinkRef(String name, Class<?> resource, String locatorMethod, Method resourceMethod)
     {
         this.name = name;
         this.resource = resource;
         this.locatorMethod = locatorMethod;
+        this.resourceMethod = resourceMethod;
+
+        if (this.resourceMethod == null) {
+            this.resourceMethod = LinkBuilder.getMethodForLink(this);
+        }
+    }
+
+    /**
+     * Create a link on a sub-resource that is created by a particular locator method on a parent class.
+     *
+     * @param resourceClass The parent resource class
+     * @param methodName The name of the sub-resource locator method on the parent class
+     * @return A LinkRef for the sub-resource
+     */
+    public LinkRef fromParentMethod(Class<?> resourceClass, String methodName)
+    {
+        return new LinkRef(name, resourceClass, methodName, null);
+    }
+
+    /**
+     * Create a LinkRef to the same LinkTarget but with an alternate name.
+     *
+     * @param name The alternate name for the link
+     * @return A LinkRef with the new name
+     */
+    public LinkRef overrideName(String name)
+    {
+        return new LinkRef(name, resource, locatorMethod, resourceMethod);
     }
 
     public String getName()
@@ -41,6 +75,11 @@ public class LinkRef
     public String getLocatorMethod()
     {
         return locatorMethod;
+    }
+
+    Method getResourceMethod()
+    {
+        return resourceMethod;
     }
 
     @Override
@@ -64,10 +103,5 @@ public class LinkRef
     public int hashCode()
     {
         return Objects.hash(name, resource, locatorMethod);
-    }
-
-    public LinkRef fromParentMethod(Class<?> resourceClass, String methodName)
-    {
-        return new LinkRef(name, resourceClass, methodName);
     }
 }
