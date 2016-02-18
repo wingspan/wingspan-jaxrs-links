@@ -75,6 +75,21 @@ public class LinkBuilderTest
     }
 
     @Test
+    public void testLinkProcessorFromLinkRef()
+    {
+        String basePath = "/LinkBuilderTest/testLinkProcessors";
+
+        UriBuilder baseBuilder = UriBuilder.fromPath(basePath);
+        LinkBuilder linkBuilder = new LinkBuilder(baseBuilder);
+        TestModel bean = new TestModel("123456789");
+
+        URI beanUrl = linkBuilder.buildUri(TestResource.Self2LinkWithLinkProcessor, bean);
+        assertNotNull(beanUrl);
+        assertEquals(basePath + "/test/linkProcessorFromLinkRefCalled/more", beanUrl.toString());
+
+    }
+
+    @Test
     public void testSubResources()
     {
         String basePath = "/LinkBuilderTest/testSubResources";

@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 
+import com.wingspan.platform.rs.links.jackson.LinkBuildingException;
+
 /**
  * The primary API for generating links from annotated resources.
  */
@@ -78,44 +80,61 @@ public class LinkBuilder
     @SuppressWarnings("unchecked")
     public URI buildUri(LinkRef theLink, Object paramBean)
     {
-        UriBuilder builder = newUriBuilder(theLink);
-        LinkTarget target = theLink.getResourceMethod().getAnnotation(LinkTarget.class);
+        try{
+            UriBuilder builder = newUriBuilder(theLink);
+            LinkTarget target = theLink.getResourceMethod().getAnnotation(LinkTarget.class);
 
-        if (target.condition() != Predicate.class) {
-            // Run the bean through the predicate to see if the link should be generated.
-            if (!predicateFor(target).test(paramBean)) {
-                return null;
-            }
-        }
-
-        String[] paramNames = target.templateParams();
-        Object[] templateValues = new Object[paramNames.length];
-
-        for (int i = 0; i < templateValues.length; ++i) {
-            templateValues[i] = Beans.readValue(paramBean, paramNames[i]);
-
-            // If any of the necessary values are missing, the URL cannot be generated. Return null in this case,
-            // because it allows for a more convenient usage model that prevents URLs from being generated when their values are dynamic.
-            if (templateValues[i] == null) {
-                return null;
+            if (target.condition() != Predicate.class) {
+                // Run the bean through the predicate to see if the link should be generated.
+                if (!predicateFor(target).test(paramBean)) {
+                    return null;
+                }
             }
 
-            // A bug in Jersey 1.x UriBuilder leaves '/' in template values for URI path segments.
-            // https://java.net/jira/browse/JAX_RS_SPEC-70
-            templateValues[i] = removeSlashes(templateValues[i]);
-        }
+            String[] paramNames = target.templateParams();
+            Object[] templateValues = new Object[paramNames.length];
 
-        if (!target.defaultQuery().isEmpty()) {
-            // Don't need to check for null bean property values here, because query parameters are always optional
-            builder.queryParam(target.defaultQuery(), Beans.readValue(paramBean, target.defaultQuery()));
-        }
+            for (int i = 0; i < templateValues.length; ++i) {
+                templateValues[i] = Beans.readValue(paramBean, paramNames[i]);
 
-        // special handling for the link processors
-        for (LinkProcessor processor : linkProcessorsFor(target)) {
-            builder = processor.processLink(builder, templateValues, paramBean);
-        }
+                // If any of the necessary values are missing, the URL cannot be generated. Return null in this case,
+                // because it allows for a more convenient usage model that prevents URLs from being generated when their values are dynamic.
+                if (templateValues[i] == null) {
+                    return null;
+                }
 
-        return builder.build(templateValues);
+                // A bug in Jersey 1.x UriBuilder leaves '/' in template values for URI path segments.
+                // https://java.net/jira/browse/JAX_RS_SPEC-70
+                templateValues[i] = removeSlashes(templateValues[i]);
+            }
+
+            if (!target.defaultQuery().isEmpty()) {
+                // Don't need to check for null bean property values here, because query parameters are always optional
+                builder.queryParam(target.defaultQuery(), Beans.readValue(paramBean, target.defaultQuery()));
+            }
+
+            // special handling for the link processors
+
+            // run link processors from target first
+            builder = runLinkProcessors(linkProcessorsFor(target), builder, templateValues, paramBean);
+
+            // then run any link processors link processors from the link ref
+            builder = runLinkProcessors(linkProcessorsFor(theLink, target), builder, templateValues, paramBean);
+
+            return builder.build(templateValues);
+        } catch (Throwable t){
+            throw new LinkBuildingException(t, theLink, paramBean);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private UriBuilder runLinkProcessors(Iterable<LinkProcessor> linkProcessors, UriBuilder builder, Object[] templateValues, Object paramBean) {
+        for (LinkProcessor processor : linkProcessors) {
+            if(processor.getModelClass().isAssignableFrom(paramBean.getClass())){
+                builder = processor.processLink(builder, templateValues, paramBean);
+            }
+        }
+        return builder;
     }
 
     /**
@@ -205,6 +224,28 @@ public class LinkBuilder
         throw new IllegalArgumentException("Unknown link name");
     }
 
+    // get link ref based link processors
+    private static Iterable<LinkProcessor> linkProcessorsFor(LinkRef linkRef, LinkTarget target)
+    {
+        List<Class<? extends LinkProcessor>> classes = linkRef.additionalLinkProcessors;
+
+        if (classes.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        if (classes.size() == 1) {
+            return Collections.singleton(newLinkProcessor(classes.get(0), target));
+        }
+
+        List<LinkProcessor> processors = new ArrayList<>();
+
+        for (Class<? extends LinkProcessor> clazz : classes) {
+            processors.add(newLinkProcessor(clazz, target));
+        }
+        return processors;
+    }
+
+    // get link target based link processors
     private static Iterable<LinkProcessor> linkProcessorsFor(LinkTarget target)
     {
         Class<? extends LinkProcessor> classes[] = target.linkProcessors();

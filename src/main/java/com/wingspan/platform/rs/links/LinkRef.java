@@ -1,6 +1,8 @@
 package com.wingspan.platform.rs.links;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,6 +18,8 @@ public class LinkRef
 
     Method  resourceMethod;
 
+    List<Class<? extends LinkProcessor>> additionalLinkProcessors;
+
     /**
      * Creates a standard link reference for a named-link on a given resource class.
      *
@@ -24,10 +28,21 @@ public class LinkRef
      */
     public LinkRef(String name, Class<?> resource)
     {
-        this(name, resource, null, null);
+        this(name, resource, null, null, null);
+    }
+    /**
+     * Creates a standard link reference for a named-link on a given resource class.
+     *
+     * @param name The name of the link in a LinkTarget annotation
+     * @param resource The resource class hosting the LinkTargets
+     */
+    public LinkRef(String name, Class<?> resource, List<Class<? extends LinkProcessor>> additionalLinkProcessors)
+    {
+        this(name, resource, null, null, additionalLinkProcessors);
+
     }
 
-    private LinkRef(String name, Class<?> resource, String locatorMethod, Method resourceMethod)
+    private LinkRef(String name, Class<?> resource, String locatorMethod, Method resourceMethod, List<Class<? extends LinkProcessor>> additionalLinkProcessors)
     {
         this.name = name;
         this.resource = resource;
@@ -36,6 +51,11 @@ public class LinkRef
 
         if (this.resourceMethod == null) {
             this.resourceMethod = LinkBuilder.getMethodForLink(this);
+        }
+        if(null == additionalLinkProcessors) {
+            this.additionalLinkProcessors = Collections.emptyList();
+        } else {
+            this.additionalLinkProcessors = additionalLinkProcessors;
         }
     }
 
@@ -48,7 +68,7 @@ public class LinkRef
      */
     public LinkRef fromParentMethod(Class<?> resourceClass, String methodName)
     {
-        return new LinkRef(name, resourceClass, methodName, null);
+        return new LinkRef(name, resourceClass, methodName, null, null);
     }
 
     /**
@@ -59,7 +79,18 @@ public class LinkRef
      */
     public LinkRef overrideName(String name)
     {
-        return new LinkRef(name, resource, locatorMethod, resourceMethod);
+        return new LinkRef(name, resource, locatorMethod, resourceMethod, additionalLinkProcessors);
+    }
+
+    /**
+     * Create a LinkRef to the same LinkTarget but with different link processors.
+     *
+     * @param additionalLinkProcessors The alternate list of link processors
+     * @return A LinkRef with the new name
+     */
+    public LinkRef overrideLinkProcessors(List<Class<? extends LinkProcessor>> additionalLinkProcessors)
+    {
+        return new LinkRef(name, resource, locatorMethod, resourceMethod, additionalLinkProcessors);
     }
 
     public String getName()
@@ -80,6 +111,10 @@ public class LinkRef
     Method getResourceMethod()
     {
         return resourceMethod;
+    }
+
+    public List<Class<? extends LinkProcessor>> getAdditionalLinkProcessors() {
+        return additionalLinkProcessors;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.wingspan.platform.rs.links;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,20 @@ public class LinkRegistryTest
         SubModel subModel = new SubModel("bye");
 
         assertNotNull("Failed to find subtype links", provider.getContext(subModel.getClass()));
+    }
+
+    @Test
+    public void testProviderDump()
+    {
+        provider.register(TestModel.class, new LinkRegistry(TestResource.SelfLink, TestResource.ItemsLink, TestResource.Self2LinkWithLinkProcessor));
+
+
+        StringWriter writer = new StringWriter();
+        DumpLinks.dumpRegistryProvider(writer, provider);
+
+
+        System.out.println(writer.toString());
+
     }
 
     @Test

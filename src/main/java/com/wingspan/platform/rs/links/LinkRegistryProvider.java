@@ -19,6 +19,10 @@ public class LinkRegistryProvider<T> implements ContextResolver<LinkRegistry>
         linkRegistryMap = Collections.emptyMap();
     }
 
+    public Map<Class<?>, LinkRegistry> getLinkRegistryMap() {
+        return linkRegistryMap;
+    }
+
     @Override
     public LinkRegistry getContext(Class<?> type)
     {

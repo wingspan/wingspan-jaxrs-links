@@ -1,6 +1,12 @@
 package com.wingspan.platform.rs.links;
 
-import javax.ws.rs.*;
+import java.util.Collections;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
@@ -14,6 +20,7 @@ public class TestResource
     public static final LinkRef ItemsLink = new LinkRef("items", TestResource.class);
     public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
     public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
+    public static final LinkRef Self2LinkWithLinkProcessor =  new LinkRef("self2", TestResource.class, Collections.singletonList(LinkRefLinkProcessor.class));
     public static final LinkRef MaybeLink =  new LinkRef("maybe", TestResource.class);
     public static final LinkRef FilenameLink =  new LinkRef("filename", TestResource.class);
     public static final LinkRef SubRsrcLink = new LinkRef("subrsrc", TestResource.class);
@@ -87,11 +94,33 @@ public class TestResource
     static class TestBeanLinkProcessor implements LinkProcessor<TestModel>
     {
         @Override
+        public Class<TestModel> getModelClass() {
+            return TestModel.class;
+        }
+
+        @Override
         public UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, TestModel bean)
         {
             templateValues[0] = "linkProcessorCalled";
             return uriBuilder;
         }
     }
+
+    static class LinkRefLinkProcessor implements LinkProcessor<TestModel>
+    {
+        @Override
+        public Class<TestModel> getModelClass() {
+            return TestModel.class;
+        }
+
+        @Override
+        public UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, TestModel bean)
+        {
+            templateValues[0] = "linkProcessorFromLinkRefCalled";
+            return uriBuilder;
+        }
+    }
+
+
 
 }
