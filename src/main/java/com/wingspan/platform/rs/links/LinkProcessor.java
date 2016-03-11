@@ -18,6 +18,8 @@ import javax.ws.rs.core.UriBuilder;
  */
 public interface LinkProcessor<TModel>
 {
+    Class<TModel> getModelClass();
+
     /**
      * Returning both the uriBuilder and template values allow link processors to modify said template values.
      */

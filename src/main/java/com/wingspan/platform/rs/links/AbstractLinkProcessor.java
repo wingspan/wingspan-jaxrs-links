@@ -1,7 +1,12 @@
 package com.wingspan.platform.rs.links;
 
 /**
- * Created by jyonosh on 2/17/16.
+ * Base class for Link processor that applies to any model.
  */
-public class AbstractLinkProcessor {
+public abstract class AbstractLinkProcessor implements LinkProcessor<Object>{
+
+    @Override
+    public Class<Object> getModelClass() {
+        return Object.class;
+    }
 }

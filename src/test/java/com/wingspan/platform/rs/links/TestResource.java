@@ -91,11 +91,10 @@ public class TestResource
         return new TestSubResource();
     }
 
-    static class TestBeanLinkProcessor implements LinkProcessor<TestModel>
+    static class TestBeanLinkProcessor extends AbstractModelSpecificLinkProcessor<TestModel>
     {
-        @Override
-        public Class<TestModel> getModelClass() {
-            return TestModel.class;
+        public TestBeanLinkProcessor() {
+            super(TestModel.class);
         }
 
         @Override
@@ -106,15 +105,10 @@ public class TestResource
         }
     }
 
-    static class LinkRefLinkProcessor implements LinkProcessor<TestModel>
+    static class LinkRefLinkProcessor extends AbstractLinkProcessor
     {
         @Override
-        public Class<TestModel> getModelClass() {
-            return TestModel.class;
-        }
-
-        @Override
-        public UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, TestModel bean)
+        public UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, Object bean)
         {
             templateValues[0] = "linkProcessorFromLinkRefCalled";
             return uriBuilder;
