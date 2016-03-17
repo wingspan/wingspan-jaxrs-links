@@ -20,10 +20,15 @@ public class TestResource
     public static final LinkRef ItemsLink = new LinkRef("items", TestResource.class);
     public static final LinkRef SelfLink =  new LinkRef("self", TestResource.class);
     public static final LinkRef Self2Link =  new LinkRef("self2", TestResource.class);
-    public static final LinkRef Self2LinkWithLinkProcessor =  new LinkRef("self2", TestResource.class, Collections.singletonList(LinkRefLinkProcessor.class));
     public static final LinkRef MaybeLink =  new LinkRef("maybe", TestResource.class);
     public static final LinkRef FilenameLink =  new LinkRef("filename", TestResource.class);
     public static final LinkRef SubRsrcLink = new LinkRef("subrsrc", TestResource.class);
+
+    // You can pass in an additional link-specific processor
+    public static final LinkRef Self2LinkWithLinkProcessor = new LinkRef("self2", TestResource.class, (uriBuilder, templateValues, bean) -> {
+        templateValues[0] = "linkProcessorFromLinkRefCalled";
+        return uriBuilder;
+    });
 
     // Since comments are a sub-resource, we need to create a reference that indicates how to chain them.
     public static final LinkRef CommentLink =
@@ -91,12 +96,8 @@ public class TestResource
         return new TestSubResource();
     }
 
-    static class TestBeanLinkProcessor extends AbstractModelSpecificLinkProcessor<TestModel>
+    static class TestBeanLinkProcessor implements LinkProcessor<TestModel>
     {
-        public TestBeanLinkProcessor() {
-            super(TestModel.class);
-        }
-
         @Override
         public UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, TestModel bean)
         {
@@ -104,17 +105,4 @@ public class TestResource
             return uriBuilder;
         }
     }
-
-    static class LinkRefLinkProcessor extends AbstractLinkProcessor
-    {
-        @Override
-        public UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, Object bean)
-        {
-            templateValues[0] = "linkProcessorFromLinkRefCalled";
-            return uriBuilder;
-        }
-    }
-
-
-
 }

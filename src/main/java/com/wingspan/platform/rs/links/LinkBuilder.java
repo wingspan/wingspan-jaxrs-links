@@ -14,8 +14,6 @@ import java.util.regex.Pattern;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 
-import com.wingspan.platform.rs.links.jackson.LinkBuildingException;
-
 /**
  * The primary API for generating links from annotated resources.
  */
@@ -80,7 +78,7 @@ public class LinkBuilder
     @SuppressWarnings("unchecked")
     public URI buildUri(LinkRef theLink, Object paramBean)
     {
-        try{
+        try {
             UriBuilder builder = newUriBuilder(theLink);
             LinkTarget target = theLink.getResourceMethod().getAnnotation(LinkTarget.class);
 
@@ -114,27 +112,20 @@ public class LinkBuilder
             }
 
             // special handling for the link processors
-
-            // run link processors from target first
-            builder = runLinkProcessors(linkProcessorsFor(target), builder, templateValues, paramBean);
-
-            // then run any link processors link processors from the link ref
-            builder = runLinkProcessors(linkProcessorsFor(theLink, target), builder, templateValues, paramBean);
-
-            return builder.build(templateValues);
-        } catch (Throwable t){
-            throw new LinkBuildingException(t, theLink, paramBean);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private UriBuilder runLinkProcessors(Iterable<LinkProcessor> linkProcessors, UriBuilder builder, Object[] templateValues, Object paramBean) {
-        for (LinkProcessor processor : linkProcessors) {
-            if(processor.getModelClass().isAssignableFrom(paramBean.getClass())){
+            for (LinkProcessor processor : linkProcessorsFor(target)) {
                 builder = processor.processLink(builder, templateValues, paramBean);
             }
+
+            // then run any link processors link processors from the link ref
+            if (theLink.linkProcessor != null) {
+                builder = theLink.linkProcessor.processLink(builder, templateValues, paramBean);
+            }
+
+            return builder.build(templateValues);
         }
-        return builder;
+        catch (Throwable t) {
+            throw new LinkBuilderException(t, theLink, paramBean);
+        }
     }
 
     /**
@@ -224,28 +215,6 @@ public class LinkBuilder
         throw new IllegalArgumentException("Unknown link name");
     }
 
-    // get link ref based link processors
-    private static Iterable<LinkProcessor> linkProcessorsFor(LinkRef linkRef, LinkTarget target)
-    {
-        List<Class<? extends LinkProcessor>> classes = linkRef.additionalLinkProcessors;
-
-        if (classes.size() == 0) {
-            return Collections.emptyList();
-        }
-
-        if (classes.size() == 1) {
-            return Collections.singleton(newLinkProcessor(classes.get(0), target));
-        }
-
-        List<LinkProcessor> processors = new ArrayList<>();
-
-        for (Class<? extends LinkProcessor> clazz : classes) {
-            processors.add(newLinkProcessor(clazz, target));
-        }
-        return processors;
-    }
-
-    // get link target based link processors
     private static Iterable<LinkProcessor> linkProcessorsFor(LinkTarget target)
     {
         Class<? extends LinkProcessor> classes[] = target.linkProcessors();

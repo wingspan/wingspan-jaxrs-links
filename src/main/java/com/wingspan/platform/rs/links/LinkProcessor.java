@@ -16,12 +16,11 @@ import javax.ws.rs.core.UriBuilder;
 /**
  * Defines a hook into the serializer for links.
  */
+@FunctionalInterface
 public interface LinkProcessor<TModel>
 {
-    Class<TModel> getModelClass();
-
     /**
      * Returning both the uriBuilder and template values allow link processors to modify said template values.
      */
-    public UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, TModel bean);
+    UriBuilder processLink(UriBuilder uriBuilder, Object[] templateValues, TModel bean);
 }

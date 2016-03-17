@@ -19,7 +19,7 @@ public class LinkRegistryProvider<T> implements ContextResolver<LinkRegistry>
         linkRegistryMap = Collections.emptyMap();
     }
 
-    public Map<Class<?>, LinkRegistry> getLinkRegistryMap() {
+    Map<Class<?>, LinkRegistry> getLinkRegistryMap() {
         return linkRegistryMap;
     }
 

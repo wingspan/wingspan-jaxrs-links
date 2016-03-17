@@ -1,8 +1,6 @@
 package com.wingspan.platform.rs.links;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,7 +16,7 @@ public class LinkRef
 
     Method  resourceMethod;
 
-    List<Class<? extends LinkProcessor>> additionalLinkProcessors;
+    LinkProcessor linkProcessor;
 
     /**
      * Creates a standard link reference for a named-link on a given resource class.
@@ -30,32 +28,28 @@ public class LinkRef
     {
         this(name, resource, null, null, null);
     }
+
     /**
      * Creates a standard link reference for a named-link on a given resource class.
      *
      * @param name The name of the link in a LinkTarget annotation
      * @param resource The resource class hosting the LinkTargets
      */
-    public LinkRef(String name, Class<?> resource, List<Class<? extends LinkProcessor>> additionalLinkProcessors)
+    public LinkRef(String name, Class<?> resource, LinkProcessor linkProcessor)
     {
-        this(name, resource, null, null, additionalLinkProcessors);
-
+        this(name, resource, null, null, linkProcessor);
     }
 
-    private LinkRef(String name, Class<?> resource, String locatorMethod, Method resourceMethod, List<Class<? extends LinkProcessor>> additionalLinkProcessors)
+    private LinkRef(String name, Class<?> resource, String locatorMethod, Method resourceMethod, LinkProcessor linkProcessor)
     {
         this.name = name;
         this.resource = resource;
         this.locatorMethod = locatorMethod;
         this.resourceMethod = resourceMethod;
+        this.linkProcessor = linkProcessor;
 
         if (this.resourceMethod == null) {
             this.resourceMethod = LinkBuilder.getMethodForLink(this);
-        }
-        if(null == additionalLinkProcessors) {
-            this.additionalLinkProcessors = Collections.emptyList();
-        } else {
-            this.additionalLinkProcessors = additionalLinkProcessors;
         }
     }
 
@@ -79,18 +73,18 @@ public class LinkRef
      */
     public LinkRef overrideName(String name)
     {
-        return new LinkRef(name, resource, locatorMethod, resourceMethod, additionalLinkProcessors);
+        return new LinkRef(name, resource, locatorMethod, resourceMethod, linkProcessor);
     }
 
     /**
      * Create a LinkRef to the same LinkTarget but with different link processors.
      *
-     * @param additionalLinkProcessors The alternate list of link processors
+     * @param linkProcessor The alternate list of link processors
      * @return A LinkRef with the new name
      */
-    public LinkRef overrideLinkProcessors(List<Class<? extends LinkProcessor>> additionalLinkProcessors)
+    public LinkRef overrideLinkProcessor(LinkProcessor<?> linkProcessor)
     {
-        return new LinkRef(name, resource, locatorMethod, resourceMethod, additionalLinkProcessors);
+        return new LinkRef(name, resource, locatorMethod, resourceMethod, linkProcessor);
     }
 
     public String getName()
@@ -111,10 +105,6 @@ public class LinkRef
     Method getResourceMethod()
     {
         return resourceMethod;
-    }
-
-    public List<Class<? extends LinkProcessor>> getAdditionalLinkProcessors() {
-        return additionalLinkProcessors;
     }
 
     @Override
